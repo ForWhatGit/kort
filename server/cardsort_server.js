@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Study = mongoose.model('Study');
 var Response = mongoose.model('Response');
 var resp = require('./response_server');
+var logger = require('./logger.js');
 
 module.exports = {
      create: function (req, res) {
@@ -22,13 +23,13 @@ module.exports = {
         });
         newStudy.save(function (err) {
             if (err) {
-                console.log('cardsort_server.js: Error creating new cardsort via POST.');
+                logger.error('cardsort_server.js: Error creating new cardsort via POST:', err);
                 res.status(504);
                 res.end(err);
             } else {
-                console.log('cardsort_server.js: Created new cardsort via POST successfully.');
-                var fullUrl = req.protocol + '://' + req.get('host')
-                res.redirect('/editcardsort/'+newStudy._id+'?new=New');
+                logger.info('cardsort_server.js: Created new cardsort via POST successfully.');
+                //var fullUrl = req.protocol + '://' + req.get('host')
+                res.redirect('/studies/new');
                 res.end();
             }
         });
@@ -37,11 +38,11 @@ module.exports = {
         Study.findOne({_id: req.params.id, ownerID: req.user._id}, function (err, docs) {
             if (err) {
                 res.status(504);
-                console.log("cardsort_server.js: Error edit cardsort.");
+                logger.error("cardsort_server.js: Error in edit cardsort:", err);
                 res.end(err);
             } else {
                 var fullUrl = req.protocol + '://' + req.get('host');
-                res.render('cardsort/edit.ejs',{title: req.query.new || "Edit",singleStudy: docs, email: req.user.email, url: fullUrl});
+                res.render('cardsort/edit.ejs',{singleStudy: docs, email: req.user.email, url: fullUrl});
             }
         });
     },
@@ -49,7 +50,7 @@ module.exports = {
         Study.findOne({_id: req.params.id, ownerID: req.user._id}, function (err, study) {
             if (err) {
                 res.status(504);
-                console.log("cardsort_server.js: Error getting study to see results.");
+                logger.error("cardsort_server.js: Error getting study to see results:", err);
                 res.end(err);
             } else {
 				//collect all group names
@@ -65,9 +66,9 @@ module.exports = {
                     }
                 }
 
-				var matrix = new Array(sum_groups.length);
-				for (var i = 0; i < sum_groups.length; i++) {
-					matrix[i] = new Array(study.data.cards.length);
+				var matrix = new Array(study.data.cards.length);
+				for (var i = 0; i < study.data.cards.length; i++) {
+					matrix[i] = new Array(sum_groups.length);
 					matrix[i].fill(0);
 				}
 
@@ -78,7 +79,7 @@ module.exports = {
 							var groupIndex = sum_groups.indexOf(response[j].groupname);
                             for (var k = 0; k < response[j].cards.length; k++) {
                                 var cardIndex = study.data.cards.indexOf(response[j].cards[k]);
-                                matrix[groupIndex][cardIndex]+=1;
+                                matrix[cardIndex][groupIndex]+=1;
                             }
                         }
                     }
@@ -93,7 +94,7 @@ module.exports = {
             function (err, study) {
             if (err) {
                 res.status(504);
-                console.log('cardsort_server.js: error updating cardsort');
+                logger.error('cardsort_server.js: error updating cardsort:', err);
                 res.end(err);
             }
             else {

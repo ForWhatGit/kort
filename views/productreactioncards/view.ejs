@@ -6,7 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="/css/productreactioncards.css" />
 
 		<nav  style='margin-bottom: 0px;' class="navbar navbar-default navbar-static-top">
-			<div class="container-fluid productreactioncards_topbar">
+			<div class="container-fluid custom_topbar">
 				<span class='navbar-brand'><%= singleStudy.title %></span>
 			    <ul class='nav navbar-nav' id='cardsort-navbar'></ul>
 			</div>
@@ -15,6 +15,7 @@
 	<body>
 		<input id='hiddenWords' type='text' value="<% for(var i=0; i<singleStudy.data.words.length; i++) {%><%= singleStudy.data.words[i] %>;<% } %>">
 		<input id='hiddenStatus' type='text' value="<%= singleStudy.status %>">
+		<input id='hiddenRandomize' type='text' value="<%= singleStudy.data.randomize %>">
 
 		<script type="text/javascript" src="/js/productreactioncards.js"/></script>
 
@@ -27,8 +28,8 @@
 		<div class='container'>
 			<div id="textArea">Select at least 10 cards that represent your experience with the system.</div>
 			<div id="cardArea"></div>
-			<button class='btn btn-default  btn-right' id='nextBtn'>Next <i class="fa fa-arrow-right" aria-hidden="true"></i></button>
-			<button class='btn btn-default btn-lg btn-right' id='done'>Finish</button>
+			<button class='btn btn-right' id='nextBtn'>Next <i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+			<button class='btn btn-lg btn-right' id='done'>Finish</button>
 		</div>
 	</body>
 </html>

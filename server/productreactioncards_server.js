@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var Study = mongoose.model('Study');
 var Response = mongoose.model('Response');
 var resp = require('./response_server');
+var logger = require('./logger.js');
 
 module.exports = {
     create: function (req, res) {
@@ -13,6 +14,7 @@ module.exports = {
             type: "productreactioncards",
             data: {
                 words: ['Accessible', 'Advanced', 'Annoying', 'Appealing', 'Approachable', 'Attractive', 'Boring', 'Business-like', 'Busy', 'Calm', 'Clean', 'Clear', 'Collaborative', 'Comfortable', 'Compatible', 'Compelling', 'Complex', 'Comprehensive', 'Confident', 'Confusing', 'Connected', 'Consistent', 'Controllable', 'Convenient', 'Creative', 'Customizable', 'Cutting edge', 'Dated', 'Desirable', 'Difficult', 'Disconnected', 'Disruptive', 'Distracting', 'Dull', 'Easy to use', 'Effective', 'Efficient', 'Effortless', 'Empowering', 'Energetic', 'Engaging', 'Entertaining', 'Enthusiastic', 'Essential', 'Exceptional', 'Exciting', 'Expected', 'Familiar', 'Fast', 'Flexible', 'Fragile', 'Fresh', 'Friendly', 'Frustrating','Fun', 'Gets in the way', 'Hard to Use', 'Helpful', 'High quality', 'Impersonal', 'Impressive', 'Incomprehensible', 'Inconsistent', 'Ineffective', 'Innovative', 'Inspiring', 'Integrated', 'Intimidating', 'Intuitive', 'Inviting', 'Irrelevant', 'Low Maintenance', 'Meaningful', 'Motivating', 'Not Secure', 'Not Valuable', 'Novel', 'Old', 'Optimistic', 'Ordinary', 'Organized', 'Overbearing', 'Overwhelming', 'Patronizing', 'Personal', 'Poor quality', 'Powerful', 'Predictable', 'Professional', 'Relevant', 'Reliable', 'Responsive', 'Rigid', 'Satisfying', 'Secure', 'Simplistic', 'Slow', 'Sophisticated', 'Stable', 'Sterile', 'Stimulating', 'Straight Forward', 'Stressful', 'Time-consuming', 'Time-Saving', 'Too Technical', 'Trustworthy', 'Unapproachable', 'Unattractive', 'Uncontrollable', 'Unconventional', 'Understandable', 'Undesirable', 'Unpredictable', 'Unrefined', 'Usable', 'Useful', 'Valuable'],
+                randomize: true,
             },
             status: 'closed',
             ownerID: req.user._id,
@@ -20,12 +22,12 @@ module.exports = {
         });
         newStudy.save(function (err) {
             if (err) {
-                console.log('productreactioncards_server.js: Error creating new.');
+                logger.error('productreactioncards_server.js: Error creating new study:', err);
                 res.status(504);
                 res.end(err);
             } else {
-                console.log('productreactioncards_server.js: Created new cardsort via POST successfully.');
-                res.redirect('/editproductreactioncards/'+newStudy._id+'?new=New');
+                logger.info('productreactioncards_server.js: Created new product reaction cards study via POST successfully.');
+                res.redirect('/studies/new');
                 res.end();
             }
         });
@@ -34,7 +36,7 @@ module.exports = {
         Study.findOne({_id: req.params.id, ownerID: req.user._id}, function (err, study) {
             if (err) {
                 res.status(504);
-                console.log("cardsort_server.js: Error edit cardsort.");
+                logger.error("productreactioncards_server.js: Error in edit product reaction cards:", err);
                 res.end(err);
             } else {
 				var fullUrl = req.protocol + '://' + req.get('host');
@@ -46,7 +48,7 @@ module.exports = {
         Study.findOne({_id: req.params.id, ownerID: req.user._id}, function (err, study) {
             if (err) {
                 res.status(504);
-                console.log("productreactioncards_server.js: Error getting study to see results.");
+                logger.error("productreactioncards_server.js: Error getting study to see results:", err);
                 res.end(err);
             } else {
                 //gather all words from all responses and put into single array
@@ -80,13 +82,14 @@ module.exports = {
             function (err, study) {
             if (err) {
                 res.status(504);
-                console.log('productreactioncards_server.js: error updating');
+                logger.error('productreactioncards_server.js: error updating:', err);
                 res.end(err);
             }
             else {
 				study.title = req.body.title;
                 study.data = {
                     words: words,
+                    randomize: req.body.randomize,
                 };
 				study.status = req.body.status;
                 study.private = req.body.private;

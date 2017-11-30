@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<%- include('../partials/header.ejs') %>
-		<title>Edit Product Reaction Study</title>
+		<title>Edit SUS</title>
 		<!-- Include javascript for private.ejs -->
 		<script src="/clipboard/clipboard.min.js"></script>
 		<script type="text/javascript" src="/js/private.js"></script>
@@ -12,37 +12,18 @@
 	<div class="container">
 		<%- include('../partials/editwarning.ejs') %>
 		<a href='/studies'><i class="fa fa-chevron-left icon-sm" aria-hidden="true"></i> Back to Studies</a>
-		<h1>Edit Product Reaction Cards</h1>
+		<h1>Edit SUS</h1>
 		<hr>
-		<form method="POST" action="/updateproductreactioncards">
+		<form method="POST" action="/updatesus">
 			<input hidden name='id' value='<%= singleStudy._id %>' />
 			<div class='row'>
 				<div class='col-sm-4'>
 					<%- include('../partials/study_options/title.ejs') %>
-
-					<div class="well">
-						<label>Options</label>
-					    <%if (singleStudy.data.randomize) { %>
-					    <div class="checkbox">
-					      <label><input type="checkbox" name="randomize" checked>Randomize word order</label>
-					    </div>
-					    <% } else { %>
-					   <div class="checkbox">
-					      <label><input type="checkbox" name="randomize">Randomize word order</label>
-					    </div>
-					    <% } %>
-					</div>
-				</div>
-				<div class='col-sm-8'>
-					<div class="well">
-						<p><label for="words">Words</label>
-						<br>One word per line.</p><textarea style='width:100%' name="words" rows="15" cols="30" id="words"><% for(var j=0; j<singleStudy.data.words.length; j++) {%><%= singleStudy.data.words[j]+'\n' %><% } %></textarea>
-					</div>
 				</div>
 			</div>
 			<div class='row'>
 				<div class="col-sm-3">
-					<%- include('../partials/study_options/status.ejs') %>
+						<%- include('../partials/study_options/status.ejs') %>
 				</div>
 				<div class="col-sm-9">
 					<div class="well">

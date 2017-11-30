@@ -2,14 +2,16 @@ $(document).ready(function() {
 	//update names of study types in table
 	$('td[data-type="cardsort"]').html('Card Sort');
 	$('td[data-type="treetest"]').html('Tree Test');
+	$('td[data-type="sus"]').html('System Usability Scale');
 	$('td[data-type="productreactioncards"]').html('Product Reaction Cards');
 	$('td[data-status="open"]').html('Accepting Responses');
 	$('td[data-status="closed"]').html('Not Accepting Responses');
 
-	studies_table = $('#studies_table').DataTable({
+	var studies_table = $('#studies_table').DataTable({
 		"bLengthChange": false,
 		"pagingType": "numbers",
 		"pageLength": 10,
+		"order": [[ 1, "desc" ]],
 		"info":     true,
 		"searching": true,
 		
@@ -34,6 +36,8 @@ $(document).ready(function() {
 		]
 	});
 
+	$( studies_table.row( [studies_table.rows().count()-1] ).nodes() ).addClass( 'highlight-first-row' );
+
 	$('#studies_table_body').on( "click",'.text-danger', function(event) {
 		event.preventDefault();
 		var studyID = $(this).data("studyid");
@@ -47,7 +51,17 @@ $(document).ready(function() {
 			},
 			callback: function (result) {
 				if(result){
-					window.location.href = '/deletestudy/'+studyID
+					$.ajax({
+				        url: '/deletestudy/'+studyID,
+				        type: "POST",
+				        data: {title: title},
+				        success: function(response) {
+				          	studies_table.row( $(event.target).parents('tr') ).remove().draw();
+				        },
+				        error:   function(xhr, text, err) {
+				      		console.log("Error deleting study via ajax");
+				        }
+				  	});
 				}
 			}
 		});

@@ -3,15 +3,6 @@ $(document).ready(function() {
 	cs.groupNum = 0;
 	cs.zoneNum = 5;
 
-	function readInResults(){
-		for (var i = 0; i < stuff.length; i++) {
-			console.log(stuff[i].groupname+': ------');
-			for (var j = 0; j < stuff[i].cards.length; j++) {
-				console.log(stuff[i].cards[j]);
-			}
-		}
-	}
-
 	function updateGroupArray(){
 		cs.groups = [];
 		$('.group').each(function(index) {
@@ -63,9 +54,6 @@ $(document).ready(function() {
 
 	function createGroup(groupname, focus_on_creation = false){
 		cs.groupNum+=1;
-		// if (cs.studyType == 'open'){
-		// 	setLocationNewGroupButton();
-		// }
 		var group = $("<div class='group'></div>");
 		var groupTitle = $("<div class='title' contenteditable='false'>"+groupname+"</div>");
 		var closeIcon = $("<i class='fa fa-times closeicon' aria-hidden='true'></i>");
@@ -173,27 +161,26 @@ $(document).ready(function() {
 			}
 		}
 
-		if(cs.status == 'open'){
-			//dragula event to check for empty intial list on 'drop' actions
-			drake.on("drop", function(event){
-				$('#hiddenResults').val(JSON.stringify(getResults()));
-				if (($('#initialColumn').children().length == 1) && (cs.responseID != 'preview')){
-					$('#done').show();
-				} else {
-					$('#done').hide();
-				}
-			});
+		//dragula event to check for empty intial list on 'drop' actions
+		drake.on("drop", function(event){
+			$('#hiddenResults').val(JSON.stringify(getResults()));
+			if (($('#initialColumn').children().length == 1)){
+				$('#done').show();
+			} else {
+				$('#done').hide();
+			}
+		});
 
-			$('#newGroupButton').click(function() {
+		$('#newGroupButton').click(function() {
 			for (var i = 1; i < 1000; i++) {
-				var newName = "Group "+i;
-				if (!groupNameExists(newName)){
+			var newName = "Group "+i;
+			if (!groupNameExists(newName)){
 					createGroup(newName, true);
 					break;
 				} 
 			}
 		});
-		}
+
 		$('#done').hide();
 		$('#hiddenGroups').remove();
 		$('#hiddenCards').remove();

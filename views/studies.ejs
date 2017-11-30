@@ -5,6 +5,14 @@
 		<%- include('partials/datatables.ejs') %>
 		<title>Kort: Studies</title>
 	 	<script type="text/javascript" src="/js/studies.js"></script>
+	 	<% if (locals.new) { %>
+	 	<style type="text/css">
+	 		.highlight-first-row {
+			    background-color: #dff0d8 !important;
+			    color: #3e8f3e;
+			}
+	 	</style>
+	 	<% } %>
 	</head>
 	<body class="background-white">
 	<%- include('partials/admin_header.ejs') %>
@@ -21,6 +29,7 @@
 				      <li><a href="/createcardsort">Card Sort</a></li>
 				      <li><a href="/createtreetest">Tree Test</a></li>
 				      <li><a href="/createproductreactioncards">Product Reaction Cards</a></li>
+				      <li><a href="/createsus">System Usability Scale (SUS)</a></li>
 				    </ul>
 			  	</div>
 			</div>
@@ -45,7 +54,7 @@
 				<% for(var i=0; i<studies.length; i++) {%>
 					<tr>
 						<td><%=studies[i].title %></td>
-						<td><%=studies[i].dateCreated.toLocaleDateString() %> (<%=studies[i].dateCreated.toLocaleTimeString() %>)</td>
+						<td><%=studies[i].getDateStr() %></td>
 						<td data-status="<%=studies[i].status %>"><%=studies[i].status %></td>
 						<td data-type='<%=studies[i].type %>'></td>
 						<td><%=studies[i].completeResponses.length %></td>
@@ -75,6 +84,15 @@
 								<% } %>
 								<td><a class="btn btn-link" href="/editproductreactioncards/<%= studies[i]._id %>">Edit</a></td>
 								<td><a class="btn btn-link" href="/productreactioncards/preview/<%= studies[i]._id %>">Preview</a></td>								
+						<% } %>
+						<%if (studies[i].type == 'sus') { %>
+								<%if (studies[i].completeResponses.length > 0) { %>									
+									<td><a class="btn btn-link" href="/susresults/<%= studies[i]._id %>">Results</a></td>
+								<% } else { %>
+									<td></td>
+								<% } %>
+								<td><a class="btn btn-link" href="/editsus/<%= studies[i]._id %>">Edit</a></td>
+								<td><a class="btn btn-link" href="/sus/preview/<%= studies[i]._id %>">Preview</a></td>
 						<% } %>
 						<td>
 							<div class="btn-group">

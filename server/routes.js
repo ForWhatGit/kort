@@ -2,6 +2,7 @@
 var study = require('./study_server');
 var cardsort = require('./cardsort_server');
 var treetest = require('./treetest_server');
+var sus = require('./sus_server');
 var productreactioncards = require('./productreactioncards_server');
 var user = require('./user_server');
 var response = require('./response_server');
@@ -9,33 +10,35 @@ var upload = require('./upload_server');
 var mongoose = require('mongoose');
 
 const multer = require('multer');
-const multerConf = {
-	storage: multer.diskStorage({
-		destination: function(req, file, next){
-			next(null,'./uploads/images');
-		},
-		filename: function(req, file, next){
-			const ext = file.mimetype.split('/')[1];
-			next(null,file.fieldname + '-' + Date.now() + '.' + ext);
-		}
-	}),
-	fileFilter: function(req, file, next){
-		if(!file){
-			next()
-		}
-		const image = file.mimetype.startsWith('image');
-		if(image){
-			next(null,true);
-		} else {
-			next({message: "File not supported"},false);
-		}
-	}
-};
 
-module.exports = function(app, passport, flash) {
+module.exports = function(app, passport, flash, uploadDir) {
+
+	const multerConf = {
+		storage: multer.diskStorage({
+			destination: function(req, file, next){
+				next(null, uploadDir);
+			},
+			filename: function(req, file, next){
+				const ext = file.mimetype.split('/')[1];
+				next(null,file.fieldname + '-' + Date.now() + '.' + ext);
+			}
+		}),
+		fileFilter: function(req, file, next){
+			if(!file){
+				next()
+			}
+			const image = file.mimetype.startsWith('image');
+			if(image){
+				next(null,true);
+			} else {
+				next({message: "File not supported"},false);
+			}
+		}
+	};
 
 	app.get('/', function (req, res) {
-		res.render('index.ejs', { loginMessage: req.flash('loginMessage') });
+		require('pkginfo')(module, 'version');
+		res.render('index.ejs', { loginMessage: req.flash('loginMessage'),version: module.exports.version });
 	});
 
 	//upload routes
@@ -49,6 +52,15 @@ module.exports = function(app, passport, flash) {
 	app.get('/uploadtest', isLoggedIn, function (req, res) {
 		res.render('upload.ejs',{imgpath: ""});
 	});
+
+	//sus routes
+	app.get('/createsus', isLoggedIn, sus.create);
+	app.get('/editsus/:id', isLoggedIn, sus.edit);
+	app.get('/sus/:id', study.view);
+	app.get('/sus/preview/:id', isLoggedIn, study.preview);
+	app.get('/sus/:id/:resid', study.view);
+	app.get('/susresults/:id', isLoggedIn, sus.results);
+	app.post('/updatesus', isLoggedIn, sus.update);
 
 	//card sort routes
 	app.get('/createcardsort', isLoggedIn, cardsort.create);
@@ -79,12 +91,13 @@ module.exports = function(app, passport, flash) {
 
 	//study routes
 	app.get('/studies', isLoggedIn, study.home);
+	app.get('/studies/new', isLoggedIn, study.homenew);
 	app.get('/study/:id', study.view);
 	app.get('/study/copy/:id', study.copy);
 	app.get('/study/:id/:resid', study.view);
 	app.get('/study/preview/:id', isLoggedIn, study.preview);
 	app.post('/submitResult', isLoggedIn, study.submitResult);
-	app.get('/deletestudy/:id', isLoggedIn, study.delete);
+	app.post('/deletestudy/:id', isLoggedIn, study.delete);
 	app.get('/clearstudy/:id', isLoggedIn, study.clearResponses);
 
 	app.get('/msg/:cm', function (req, res) {

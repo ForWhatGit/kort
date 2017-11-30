@@ -75,6 +75,42 @@ function addGroupsFromDialog(){
 }
 
 
+
+function deleteAllCards(){
+	bootbox.confirm({
+			size: 'small',
+			closeButton: false,
+			message: "Delete all cards?",
+			buttons: {confirm: {label: 'Delete All Cards',className: 'btn-danger'},
+			cancel: {label: 'Cancel',className: 'btn-link'}
+		},
+		callback: function (result) {
+			if(result){
+				cards_table.clear().draw();
+				updateInputArrays();
+			}
+		}
+	});
+}
+
+function deleteAllGroups(){
+	bootbox.confirm({
+			size: 'small',
+			closeButton: false,
+			message: "Delete all groups?",
+			buttons: {confirm: {label: 'Delete All Groups',className: 'btn-danger'},
+			cancel: {label: 'Cancel',className: 'btn-link'}
+		},
+		callback: function (result) {
+			if(result){
+				groups_table.clear().draw();
+				updateInputArrays();
+			}
+		}
+	});
+}
+
+
 //removes a list item (card) from the cards_table datatable
 function deleteCard(target){
 	var row = $(target).parent().parent();
@@ -117,6 +153,15 @@ $( document ).ready(function() {
 		createCard($('#newCardInput').val().trim())
 	});
 
+	//capture enter key if newCardInput has focus
+	$('#newCardInput').keypress(function (e) {
+		if(e.which == 13) {
+	    	$('#addCardBtn').click();
+	    	return false;  
+  		}
+	}); 
+
+
 	//initalize groups_table DataTable
 	groups_table = $('#groups_table').DataTable({
 		"language": {
@@ -137,6 +182,15 @@ $( document ).ready(function() {
 	$('#addGroupBtn').click(function(event){
 		createGroup($('#newGroupInput').val().trim());
 	});
+
+	//capture enter key if newGroupInput has focus
+	$('#newGroupInput').keypress(function (e) {
+		if(e.which == 13) {
+	    	$('#addGroupBtn').click();
+	    	return false;  
+  		}
+	}); 
+
 
 	//places existing cards and groups into input fields (so save works when no changes are made)
 	//or else fields are empty.

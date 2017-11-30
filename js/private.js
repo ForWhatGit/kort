@@ -8,6 +8,13 @@ $( document ).ready(function() {
 	  $("#responseSingleArea").toggle();
 	});
 
+	$('#newResponseInput').keypress(function (e) {
+		if(e.which == 13) {
+	    	$('#addResponseBtn').click();
+	    	return false;  
+  		}
+	}); 
+
  	//bind response add button
  	$('#addResponseBtn').click(function(){
  		var studyID = $(this).data("studyid");
@@ -101,8 +108,18 @@ $( document ).ready(function() {
 		    },
 		    callback: function (result) {
 		    	if(result){
-		    		window.location.href = '/clearstudy/'+studyID
-		    	}
+		    		$.ajax({
+						url:  "/clearstudy/"+studyID,
+						type: "GET",
+						contentType: "application/json",
+						success: function(data) {
+		  	    			$("#responses_table_body tr").remove(); 
+						},
+						error:   function(xhr, text, err) {
+						  console.log("private.ejs: clearstudy ajax error");
+						}
+					});
+		    	} 
 		    }
 		});
 	});
